@@ -23,6 +23,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -128,12 +129,20 @@ public class ItementityFacadeREST extends AbstractFacade<Itementity> {
     @GET
     @Path("item")
     @Produces({"application/json"})
-    public ItemCountryentity getItemBySKU(@QueryParam("SKU") String SKU) {
+    public Response getItemBySKU(@QueryParam("SKU") String SKU) {
         try {
-            Query q = em.createQuery("Select i from ItemCountryentity i where i.sku=:SKU and i.isdeleted=false");
+            Query q = em.createQuery("Select i from Itementity i where i.sku=:SKU and i.isdeleted=false");
             q.setParameter("SKU", SKU);
-            ItemCountryentity item = (ItemCountryentity) q.getSingleResult();
-            return item;
+            Itementity item = (Itementity) q.getSingleResult();
+            return Response
+            .status(200)
+            .header("Access-Control-Allow-Origin", "*")
+            .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+            .header("Access-Control-Allow-Credentials", "true")
+            .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+            .header("Access-Control-Max-Age", "1209600")
+            .entity(item)
+            .build();
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
