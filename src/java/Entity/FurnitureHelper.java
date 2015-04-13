@@ -11,6 +11,15 @@ public class FurnitureHelper {
     private Integer length;
     private Integer width;
     private Integer height;
+    private String category;
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     public Long getId() {
         return id;

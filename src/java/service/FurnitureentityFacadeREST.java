@@ -100,7 +100,7 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
         try {
             List<FurnitureHelper> list = new ArrayList<>();
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
-            String stmt = "SELECT i.ID as id, i.NAME as name, f.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height FROM itementity i, furnitureentity f, item_countryentity ic where i.ID=f.ID and i.ID=ic.ITEM_ID and ic.COUNTRY_ID=?;";
+            String stmt = "SELECT i.ID as id, i.NAME as name, f.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height, i.CATEGORY as category FROM itementity i, furnitureentity f, item_countryentity ic where i.ID=f.ID and i.ID=ic.ITEM_ID and ic.COUNTRY_ID=?;";
             PreparedStatement ps = conn.prepareStatement(stmt);
             ps.setLong(1, countryID);
             ResultSet rs = ps.executeQuery();
@@ -115,6 +115,8 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
                 f.setWidth(rs.getInt("width"));
                 f.setHeight(rs.getInt("height"));
                 f.setLength(rs.getInt("length"));
+                f.setCategory(rs.getString("category"));
+
                 list.add(f);
             }
             GenericEntity<List<FurnitureHelper>> entity = new GenericEntity<List<FurnitureHelper>>(list) {
@@ -141,7 +143,7 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
         try {
             List<FurnitureHelper> list = new ArrayList<>();
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
-            String stmt = "SELECT i.ID as id, i.NAME as name, f.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height FROM itementity i, furnitureentity f, item_countryentity ic where i.ID=f.ID and i.ID=ic.ITEM_ID and ic.COUNTRY_ID=? and i.CATEGORY=?;";
+            String stmt = "SELECT i.ID as id, i.NAME as name, f.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height, i.CATEGORY as category FROM itementity i, furnitureentity f, item_countryentity ic where i.ID=f.ID and i.ID=ic.ITEM_ID and ic.COUNTRY_ID=? and i.CATEGORY=?;";
             PreparedStatement ps = conn.prepareStatement(stmt);
             ps.setLong(1, countryID);
             ps.setString(2, category);
@@ -157,6 +159,8 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
                 f.setWidth(rs.getInt("width"));
                 f.setHeight(rs.getInt("height"));
                 f.setLength(rs.getInt("length"));
+                f.setCategory(rs.getString("category"));
+
                 list.add(f);
             }
             GenericEntity<List<FurnitureHelper>> entity = new GenericEntity<List<FurnitureHelper>>(list) {
