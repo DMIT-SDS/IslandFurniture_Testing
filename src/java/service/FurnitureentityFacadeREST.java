@@ -97,12 +97,22 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
     @Path("getFurnitureList")
     @Produces("application/json")
     public Response getFurnitureList(@QueryParam("countryID") Long countryID) {
+        System.out.println("RESTful: getFurnitureList() called with countryID " + countryID);
         try {
             List<FurnitureHelper> list = new ArrayList<>();
+            String stmt = "";
+            PreparedStatement ps;
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
-            String stmt = "SELECT i.ID as id, i.NAME as name, f.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height, i.CATEGORY as category FROM itementity i, furnitureentity f, item_countryentity ic where i.ID=f.ID and i.ID=ic.ITEM_ID and ic.COUNTRY_ID=?;";
-            PreparedStatement ps = conn.prepareStatement(stmt);
-            ps.setLong(1, countryID);
+
+            if (countryID == null) {
+                stmt = "SELECT i.ID as id, i.NAME as name, f.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height, i.CATEGORY as category FROM itementity i, furnitureentity f, item_countryentity ic where i.ID=f.ID and i.ID=ic.ITEM_ID;";
+                ps = conn.prepareStatement(stmt);
+            } else {
+                stmt = "SELECT i.ID as id, i.NAME as name, f.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i._LENGTH as length, i.WIDTH as width, i.HEIGHT as height, i.CATEGORY as category FROM itementity i, furnitureentity f, item_countryentity ic where i.ID=f.ID and i.ID=ic.ITEM_ID and ic.COUNTRY_ID=?;";
+                ps = conn.prepareStatement(stmt);
+                ps.setLong(1, countryID);
+            }
+
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 FurnitureHelper f = new FurnitureHelper();
