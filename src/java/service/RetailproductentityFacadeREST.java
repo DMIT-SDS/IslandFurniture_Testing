@@ -5,7 +5,13 @@
  */
 package service;
 
+import Entity.RetailProductHelper;
 import Entity.Retailproductentity;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -18,6 +24,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -26,6 +35,7 @@ import javax.ws.rs.Produces;
 @Stateless
 @Path("entity.retailproductentity")
 public class RetailproductentityFacadeREST extends AbstractFacade<Retailproductentity> {
+
     @PersistenceContext(unitName = "WebService_MobilePU")
     private EntityManager em;
 
@@ -81,9 +91,61 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
         return String.valueOf(super.count());
     }
 
+    @GET
+    @Path("getRetailProductList")
+    @Produces("application/json")
+    public Response getRetailProductList(@QueryParam("countryID") Long countryID) {
+        System.out.println("RESTful: getRetailProductList() called with countryID " + countryID);
+        try {
+            List<RetailProductHelper> list = new ArrayList<>();
+            String stmt = "";
+            PreparedStatement ps;
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
+
+            if (countryID == null) {
+                stmt = "SELECT i.ID as id, i.NAME as name, rp.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i.CATEGORY as category FROM retailproductentity rp, itementity i where rp.ID=i.ID and i.ISDELETED=FALSE;";
+                ps = conn.prepareStatement(stmt);
+            } else {
+                stmt = "SELECT i.ID as id, i.NAME as name, rp.IMAGEURL as imageURL, i.SKU as sku, i.DESCRIPTION as description, i.TYPE as type, i.CATEGORY as category, ic.RETAILPRICE as price FROM retailproductentity rp, itementity i, item_countryentity ic where rp.ID=i.ID and i.id=ic.ITEM_ID and i.ISDELETED=FALSE and ic.COUNTRY_ID=?;";
+                ps = conn.prepareStatement(stmt);
+                ps.setLong(1, countryID);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                RetailProductHelper rp = new RetailProductHelper();
+                rp.setId(rs.getLong("id"));
+                rp.setName(rs.getString("name"));
+                rp.setImageUrl(rs.getString("imageURL"));
+                rp.setSKU(rs.getString("sku"));
+                rp.setDescription(rs.getString("description"));
+                rp.setType(rs.getString("type"));
+                rp.setCategory(rs.getString("category"));
+                if (countryID != null) {
+                    rp.setPrice(rs.getDouble("price"));
+                }
+                list.add(rp);
+            }
+            GenericEntity<List<RetailProductHelper>> entity = new GenericEntity<List<RetailProductHelper>>(list) {
+            };
+            return Response
+                    .status(200)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+                    .header("Access-Control-Allow-Credentials", "true")
+                    .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+                    .header("Access-Control-Max-Age", "1209600")
+                    .entity(entity)
+                    .build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }
