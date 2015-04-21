@@ -1,13 +1,16 @@
 
 package Entity;
 
-public class RetailProductHelper {
+public class Furniture {
     private Long id;
     private String name;
     private String imageUrl;
     private String SKU;
     private String description;
     private String type;
+    private Integer length;
+    private Integer width;
+    private Integer height;
     private String category;
     private Double price;
 
@@ -17,6 +20,14 @@ public class RetailProductHelper {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public Long getId() {
@@ -67,12 +78,28 @@ public class RetailProductHelper {
         this.type = type;
     }
 
-    public String getCategory() {
-        return category;
+    public Integer getLength() {
+        return length;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setLength(Integer length) {
+        this.length = length;
+    }
+
+    public Integer getWidth() {
+        return width;
+    }
+
+    public void setWidth(Integer width) {
+        this.width = width;
+    }
+
+    public Integer getHeight() {
+        return height;
+    }
+
+    public void setHeight(Integer height) {
+        this.height = height;
     }
     
 }

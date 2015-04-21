@@ -5,7 +5,7 @@
  */
 package service;
 
-import Entity.FurnitureHelper;
+import Entity.Furniture;
 import Entity.ItemCountryentity;
 import Entity.Itementity;
 import java.util.ArrayList;
@@ -152,28 +152,28 @@ public class ItementityFacadeREST extends AbstractFacade<Itementity> {
     @GET
     @Path("furniture")
     @Produces({"application/json"})
-    public List<FurnitureHelper> listAllFurnitureByCountry(@QueryParam("country") String country) {
+    public List<Furniture> listAllFurnitureByCountry(@QueryParam("country") String country) {
         Query q = em.createQuery("Select c from ItemCountryentity c,Countryentity co where c.countryId.id=co.id and co.name=:country and c.isdeleted=false");
         
         q.setParameter("country", country);
         List<ItemCountryentity> list = q.getResultList();
-        List<FurnitureHelper> furnitureList = new ArrayList();
+        List<Furniture> furnitureList = new ArrayList();
         System.out.println("Country is " + country);
         System.out.println("Number of furniture retreived: " + list.size());
         for (ItemCountryentity itemCountry : list) {
             Itementity item = itemCountry.getItemId();
             if (!item.getIsdeleted() && item.getType().equals("Furniture")) {
-                FurnitureHelper furnitureHelper = new FurnitureHelper();
-                furnitureHelper.setId(item.getId());
-                furnitureHelper.setName(item.getName());
-                furnitureHelper.setDescription(item.getDescription());
-                furnitureHelper.setImageUrl(item.getFurnitureentity().getImageurl());
-                furnitureHelper.setSKU(item.getSku());
-                furnitureHelper.setType(item.getType());
-                furnitureHelper.setLength(item.getLength());
-                furnitureHelper.setWidth(item.getWidth());
-                furnitureHelper.setHeight(item.getHeight());
-                furnitureList.add(furnitureHelper);
+                Furniture furniture = new Furniture();
+                furniture.setId(item.getId());
+                furniture.setName(item.getName());
+                furniture.setDescription(item.getDescription());
+                furniture.setImageUrl(item.getFurnitureentity().getImageurl());
+                furniture.setSKU(item.getSku());
+                furniture.setType(item.getType());
+                furniture.setLength(item.getLength());
+                furniture.setWidth(item.getWidth());
+                furniture.setHeight(item.getHeight());
+                furnitureList.add(furniture);
             }
         }
         return furnitureList;
@@ -182,19 +182,19 @@ public class ItementityFacadeREST extends AbstractFacade<Itementity> {
 //    @GET
 //    @Path("itemInfo")
 //    @Produces({"application/json"})
-//    public FurnitureHelper getItemInfo(@QueryParam("country") Long itemId) {
+//    public furniture getItemInfo(@QueryParam("country") Long itemId) {
 //        Query q = em.createQuery("Select i from Itementity i where i.id=:itemId and i.isdeleted=false");
 //        List<Itementity> item = q.getSingleResult();
-//        List<FurnitureHelper> furnitureList = new ArrayList();
+//        List<furniture> furnitureList = new ArrayList();
 //        
-//        FurnitureHelper furnitureHelper = new FurnitureHelper();
-//        furnitureHelper.setId(item.getId());
-//        furnitureHelper.setName(item.getName());
-//        furnitureHelper.setDescription(item.getDescription());
-//        furnitureHelper.setImageUrl(item.getFurnitureentity().getImageurl());
-//        furnitureHelper.setSKU(item.getSku());
-//        furnitureHelper.setType(item.getType());
-//        furnitureList.add(furnitureHelper);
+//        furniture furniture = new furniture();
+//        furniture.setId(item.getId());
+//        furniture.setName(item.getName());
+//        furniture.setDescription(item.getDescription());
+//        furniture.setImageUrl(item.getFurnitureentity().getImageurl());
+//        furniture.setSKU(item.getSku());
+//        furniture.setType(item.getType());
+//        furnitureList.add(furniture);
 //        
 //        return furnitureList;
 //    }

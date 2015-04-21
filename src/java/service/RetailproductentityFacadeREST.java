@@ -5,7 +5,7 @@
  */
 package service;
 
-import Entity.RetailProductHelper;
+import Entity.RetailProduct;
 import Entity.Retailproductentity;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -97,7 +97,7 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
     public Response getRetailProductList(@QueryParam("countryID") Long countryID) {
         System.out.println("RESTful: getRetailProductList() called with countryID " + countryID);
         try {
-            List<RetailProductHelper> list = new ArrayList<>();
+            List<RetailProduct> list = new ArrayList<>();
             String stmt = "";
             PreparedStatement ps;
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
@@ -113,7 +113,7 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                RetailProductHelper rp = new RetailProductHelper();
+                RetailProduct rp = new RetailProduct();
                 rp.setId(rs.getLong("id"));
                 rp.setName(rs.getString("name"));
                 rp.setImageUrl(rs.getString("imageURL"));
@@ -126,7 +126,7 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
                 }
                 list.add(rp);
             }
-            GenericEntity<List<RetailProductHelper>> entity = new GenericEntity<List<RetailProductHelper>>(list) {
+            GenericEntity<List<RetailProduct>> entity = new GenericEntity<List<RetailProduct>>(list) {
             };
             return Response
                     .status(200)

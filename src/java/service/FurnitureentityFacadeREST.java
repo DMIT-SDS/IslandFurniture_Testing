@@ -1,6 +1,6 @@
 package service;
 
-import Entity.FurnitureHelper;
+import Entity.Furniture;
 import Entity.Furnitureentity;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -88,7 +88,7 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
     public Response getFurnitureList(@QueryParam("countryID") Long countryID) {
         System.out.println("RESTful: getFurnitureList() called with countryID " + countryID);
         try {
-            List<FurnitureHelper> list = new ArrayList<>();
+            List<Furniture> list = new ArrayList<>();
             String stmt = "";
             PreparedStatement ps;
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
@@ -104,7 +104,7 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                FurnitureHelper f = new FurnitureHelper();
+                Furniture f = new Furniture();
                 f.setId(rs.getLong("id"));
                 f.setName(rs.getString("name"));
                 f.setImageUrl(rs.getString("imageURL"));
@@ -118,7 +118,7 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
 
                 list.add(f);
             }
-            GenericEntity<List<FurnitureHelper>> entity = new GenericEntity<List<FurnitureHelper>>(list) {
+            GenericEntity<List<Furniture>> entity = new GenericEntity<List<Furniture>>(list) {
             };
             return Response
                     .status(200)
@@ -142,7 +142,7 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
         System.out.println("RESTful: getFurnitureListByCategory() called with countryID " + countryID + " and category " + category);
 
         try {
-            List<FurnitureHelper> list = new ArrayList<>();
+            List<Furniture> list = new ArrayList<>();
             String stmt = "";
             PreparedStatement ps;
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
@@ -159,7 +159,7 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
             }
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                FurnitureHelper f = new FurnitureHelper();
+                Furniture f = new Furniture();
                 f.setId(rs.getLong("id"));
                 f.setName(rs.getString("name"));
                 f.setImageUrl(rs.getString("imageURL"));
@@ -175,7 +175,7 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
                 }
                 list.add(f);
             }
-            GenericEntity<List<FurnitureHelper>> entity = new GenericEntity<List<FurnitureHelper>>(list) {
+            GenericEntity<List<Furniture>> entity = new GenericEntity<List<Furniture>>(list) {
             };
             return Response
                     .status(200)
