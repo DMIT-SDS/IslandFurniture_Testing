@@ -115,7 +115,9 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
                 f.setHeight(rs.getInt("height"));
                 f.setLength(rs.getInt("length"));
                 f.setCategory(rs.getString("category"));
-
+                if (countryID != null) {
+                    f.setPrice(rs.getDouble("price"));
+                }
                 list.add(f);
             }
             GenericEntity<List<Furniture>> entity = new GenericEntity<List<Furniture>>(list) {
