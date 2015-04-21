@@ -7,6 +7,8 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.*;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Stateless
 @Path("entity.countryentity")
@@ -85,10 +87,11 @@ public class CountryentityFacadeREST extends AbstractFacade<Countryentity> {
         return countryList;
     }
 //###
+
     @GET
     @Path("getQuantity")
     @Produces({"application/json"})
-    public String getItemQuantityOfCountry(@QueryParam("countryID") Long countryID, @QueryParam("SKU") String SKU) {
+    public Response getItemQuantityOfCountry(@QueryParam("countryID") Long countryID, @QueryParam("SKU") String SKU) {
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
             String stmt = "Select sum(li.QUANTITY) as sum from country_ecommerce c, warehouseentity w, storagebinentity sb, storagebinentity_lineitementity sbli, lineitementity li, itementity i where li.ITEM_ID=i.ID and sbli.lineItems_ID=li.ID and sb.ID=sbli.StorageBinEntity_ID and w.id=sb.WAREHOUSE_ID and c.warehouseentity_id=w.id and countryentity_id = ? and i.SKU= ?";//25
@@ -101,28 +104,15 @@ public class CountryentityFacadeREST extends AbstractFacade<Countryentity> {
                 qty = rs.getString("sum");
             }
             if (qty == null) {
-                return "0";
+                qty = "0";
             }
-            return qty;
+            return Response.ok(qty, MediaType.APPLICATION_JSON).build();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return "0";
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
-//    @GET
-//    @Path("")
-//    @Produces({"application/json"})
-//    public int setECWarehouse(Long countryID, Long warehouseID) {
-//        try {
-//            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
-//            Statement stmt = conn.createStatement();
-//            stmt.executeQuery("");
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//        return 0;
-//    }
     @Override
     protected EntityManager getEntityManager() {
         return em;
