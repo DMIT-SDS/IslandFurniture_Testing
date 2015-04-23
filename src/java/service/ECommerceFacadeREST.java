@@ -1,5 +1,7 @@
 package service;
 //###
+
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,24 +16,17 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
-
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 @Path("commerce")
 public class ECommerceFacadeREST {
 
     @Context
     private UriInfo context;
 
-    /**
-     * Creates a new instance of ECommerce
-     */
     public ECommerceFacadeREST() {
     }
 
-    /**
-     * Retrieves representation of an instance of service.ECommerce
-     *
-     * @return an instance of java.lang.String
-     */
     @GET
     @Produces("application/json")
     public String getJson() {
@@ -50,10 +45,12 @@ public class ECommerceFacadeREST {
     public void putJson(String content) {
     }
 
-    @GET
+    @PUT
     @Path("createECommerceTransactionRecord")
-    @Produces({"application/json"})
-    public String createECommerceTransactionRecord(@QueryParam("memberID") Long memberID, @QueryParam("amountPaid") Double amountPaid, @QueryParam("countryID") Long countryID) {
+    @Consumes({"application/json"})
+    @Produces({"application/json,text/plain"})
+    public Response createECommerceTransactionRecord(@QueryParam("memberID") Long memberID, @QueryParam("amountPaid") Double amountPaid, @QueryParam("countryID") Long countryID, @Context UriInfo info) {
+        Long generatedKey = 0L;
         try {
             String currency = "";
             String storeID = "";
@@ -70,7 +67,7 @@ public class ECommerceFacadeREST {
             System.out.println("currency: " + currency);
             System.out.println("storeID: " + storeID);
             if (currency.equals("") || storeID.equals("")) {
-                return "0";
+                return Response.status(Response.Status.NOT_FOUND).build();
             }
 
             java.util.Date dt = new java.util.Date();
@@ -88,28 +85,33 @@ public class ECommerceFacadeREST {
             ps = conn.prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
             System.out.println("execute update return: " + ps.executeUpdate());
             rs = ps.getGeneratedKeys();
-            Long generatedKey = 0L;
+
             while (rs.next()) {
                 generatedKey = rs.getLong(1);
                 System.out.println("generated key is " + generatedKey);
             }
 
             if (generatedKey > 0L) {
-                return generatedKey + "";
+                System.out.println("Response.ok(generatedKey, MediaType.APPLICATION_JSON).build();");
+                URI uri = info.getAbsolutePathBuilder().path("createECommerceTransactionRecord?generatedKey=" + generatedKey).build();
+                return Response.created(uri).build();
             } else {
-                return "0";
+                System.out.println("Response.status(Response.Status.NOT_FOUND).build();");
+                return Response.status(Response.Status.NOT_FOUND).build();
             }
 
         } catch (Exception ex) {
+            System.out.println("Exception occurred");
             ex.printStackTrace();
-            return "0";
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
-    @GET
+    @PUT
     @Path("createECommerceLineItemRecord")
+    @Consumes({"application/json"})
     @Produces({"application/json"})
-    public String createECommerceLineItemRecord(@QueryParam("salesRecordID") String salesRecordID, @QueryParam("itemID") String itemID, @QueryParam("quantity") int quantity, @QueryParam("countryID") Long countryID) {
+    public Response createECommerceLineItemRecord(@QueryParam("salesRecordID") String salesRecordID, @QueryParam("itemID") String itemID, @QueryParam("quantity") int quantity, @QueryParam("countryID") Long countryID, @Context UriInfo info) {
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
             String stmt = "INSERT INTO lineitementity (`QUANTITY`, `ITEM_ID`) VALUES (?, ?);";
@@ -131,7 +133,7 @@ public class ECommerceFacadeREST {
             int result = ps.executeUpdate();
 
             if (result == 0) {
-                return "0";
+                return Response.status(Response.Status.NOT_FOUND).build();
             }
 
             //update quantity of items
@@ -191,7 +193,7 @@ public class ECommerceFacadeREST {
                     ps.setLong(1, lineItemID);
                     ps.executeUpdate();
                     System.out.println("quantity still needed: " + quantity);
-                    
+
                     updateStmt = "UPDATE storagebinentity SET FREEVOLUME = VOLUME WHERE ID = ?";
                     ps = conn.prepareStatement(updateStmt);
                     ps.setLong(1, storageBinID);
@@ -199,10 +201,13 @@ public class ECommerceFacadeREST {
                 }
             }
 
-            return "1";
+            //return Response.ok(1, MediaType.APPLICATION_JSON).build();
+            System.out.println("Response.ok(generatedKey, MediaType.APPLICATION_JSON).build();");
+            URI uri = info.getAbsolutePathBuilder().path("createECommerceTransactionRecord?result=" + 1).build();
+            return Response.created(uri).build();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return "0";
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 }
