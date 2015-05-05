@@ -95,6 +95,7 @@ public class ECommerceFacadeREST {
                 System.out.println("Response.ok(generatedKey, MediaType.APPLICATION_JSON).build();");
                 URI uri = info.getAbsolutePathBuilder().path("createECommerceTransactionRecord?generatedKey=" + generatedKey).build();
                 return Response.created(uri).build();
+                //return Response.status(Response.Status.CREATED).contentLocation(uri).build();
             } else {
                 System.out.println("Response.status(Response.Status.NOT_FOUND).build();");
                 return Response.status(Response.Status.NOT_FOUND).build();
