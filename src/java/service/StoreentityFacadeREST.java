@@ -6,6 +6,10 @@
 package service;
 
 import Entity.Storeentity;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -20,6 +24,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -62,20 +69,6 @@ public class StoreentityFacadeREST extends AbstractFacade<Storeentity> {
     public Storeentity find(@PathParam("id") Long id) {
         return super.find(id);
     }
-//
-//    @GET
-//    @Override
-//    @Produces({"application/xml", "application/json"})
-//    public List<Storeentity> findAll() {
-//        return super.findAll();
-//    }
-//
-//    @GET
-//    @Path("{from}/{to}")
-//    @Produces({"application/xml", "application/json"})
-//    public List<Storeentity> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-//        return super.findRange(new int[]{from, to});
-//    }
 
     @GET
     @Path("stores")
@@ -93,13 +86,29 @@ public class StoreentityFacadeREST extends AbstractFacade<Storeentity> {
         list2.add(list.get(0));
         return list;
     }
-//
-//    @GET
-//    @Path("count")
-//    @Produces("text/plain")
-//    public String countREST() {
-//        return String.valueOf(super.count());
-//    }
+
+    @GET
+    @Path("getQuantity")
+    @Produces({"application/json"})
+    public Response getItemQuantityOfStore(@QueryParam("storeID") Long storeID, @QueryParam("SKU") String SKU) {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
+            String stmt = "SELECT sum(l.QUANTITY) as sum FROM storeentity s, warehouseentity w, storagebinentity sb, storagebinentity_lineitementity sbli, lineitementity l, itementity i where s.WAREHOUSE_ID=w.ID and w.ID=sb.WAREHOUSE_ID and sb.ID=sbli.StorageBinEntity_ID and sbli.lineItems_ID=l.ID and l.ITEM_ID=i.ID and s.ID=? and i.SKU=?";
+            PreparedStatement ps = conn.prepareStatement(stmt);
+            ps.setLong(1, storeID);
+            ps.setString(2, SKU);
+            ResultSet rs = ps.executeQuery();
+            int qty = 0;
+            if (rs.next()) {
+                qty = rs.getInt("sum");
+            }
+
+            return Response.ok(qty + "", MediaType.APPLICATION_JSON).build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
 
     @Override
     protected EntityManager getEntityManager() {
