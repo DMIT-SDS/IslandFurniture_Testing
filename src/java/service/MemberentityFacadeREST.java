@@ -1,19 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package service;
 
 import Entity.Itementity;
 import Entity.Lineitementity;
-import Entity.Loyaltytierentity;
-import Entity.MemberHelper;
+import Entity.Member;
 import Entity.Memberentity;
 import Entity.Qrphonesyncentity;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.DecimalFormat;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -30,11 +27,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-/**
- *
- * @author Jason
- */
 @Stateless
 @Path("entity.memberentity")
 public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
@@ -84,41 +79,79 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
         return list;
     }
 
+//    @GET
+//    @Path("login")
+//    @Produces("application/json")
+//    public Memberentity loginMember(@QueryParam("email") String email, @QueryParam("password") String password) {
+//        System.out.println("loginMember is called");
+//        try {
+//            Query q = em.createQuery("SELECT m FROM Memberentity m where m.email=:email and m.isdeleted=FALSE");
+//            q.setParameter("email", email);
+//            Memberentity m = (Memberentity) q.getSingleResult();
+//            System.out.println("member email: " + m.getEmail());
+//            String passwordSalt = m.getPasswordsalt();
+//            String passwordHash = generatePasswordHash(passwordSalt, password);
+//            if (passwordHash.equals(m.getPasswordhash())) {
+//                em.detach(m);
+//                m.setLoyaltytierId(null);
+//                m.setCity(null);
+//                m.setAccountactivationstatus(null);
+//                m.setAccountlockstatus(null);
+//                m.setAddress(null);
+//                m.setPasswordhash(null);
+//                m.setLineitementityList(null);
+//                m.setWishlistId(null);
+//                m.setPasswordhash(null);
+//                m.setPasswordsalt(null);
+//                m.setPasswordreset(null);
+//                m.setUnlockcode(null);
+//                m.setActivationcode(null);
+//                return m;
+//            } else {
+//                System.out.println("Login credentials provided were incorrect, password wrong.");
+//                return null;
+//            }
+//        } catch (Exception ex) {
+//            System.out.println("\nServer failed to login member:\n" + ex);
+//            return null;
+//        }
+//    }
+
     @GET
     @Path("login")
     @Produces("application/json")
-    public Memberentity loginMember(@QueryParam("email") String email, @QueryParam("password") String password) {
-        System.out.println("loginMember is called");
+    public Response loginMember(@QueryParam("email") String email, @QueryParam("password") String password) {
         try {
-            Query q = em.createQuery("SELECT m FROM Memberentity m where m.email=:email and m.isdeleted=FALSE");
-            q.setParameter("email", email);
-            Memberentity m = (Memberentity) q.getSingleResult();
-            System.out.println("member email: " + m.getEmail());
-            String passwordSalt = m.getPasswordsalt();
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
+            String stmt = "SELECT * FROM memberentity m WHERE m.EMAIL=?";
+            PreparedStatement ps = conn.prepareStatement(stmt);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            String passwordSalt = rs.getString("PASSWORDSALT");
             String passwordHash = generatePasswordHash(passwordSalt, password);
-            if (passwordHash.equals(m.getPasswordhash())) {
-                em.detach(m);
-                m.setLoyaltytierId(null);
-                m.setCity(null);
-                m.setAccountactivationstatus(null);
-                m.setAccountlockstatus(null);
-                m.setAddress(null);
-                m.setPasswordhash(null);
-                m.setLineitementityList(null);
-                m.setWishlistId(null);
-                m.setPasswordhash(null);
-                m.setPasswordsalt(null);
-                m.setPasswordreset(null);
-                m.setUnlockcode(null);
-                m.setActivationcode(null);
-                return m;
+            Member member = new Member();
+            if (passwordHash.equals(rs.getString("PASSWORDHASH"))) {
+                member.setAddress(rs.getString("ADDRESS"));
+                member.setAge(rs.getInt("AGE"));
+                member.setCity(rs.getString("CITY"));
+                member.setCumulativeSpending(rs.getDouble("CUMULATIVESPENDING"));
+                member.setEmail(rs.getString("EMAIL"));
+                member.setId(rs.getLong("ID"));
+                member.setIncome(rs.getInt("INCOME"));
+                member.setLoyaltyPoints(rs.getInt("LOYALTYPOINTS"));
+                member.setName(rs.getString("NAME"));
+                member.setPhone(rs.getString("PHONE"));
+                member.setSecurityAnswer(rs.getString("SECURITYANSWER"));
+                member.setSecurityQuestion(rs.getInt("SECURITYQUESTION"));
             } else {
                 System.out.println("Login credentials provided were incorrect, password wrong.");
-                return null;
+                return Response.status(Response.Status.UNAUTHORIZED).build();
             }
+            return Response.ok(member, MediaType.APPLICATION_JSON).build();
         } catch (Exception ex) {
-            System.out.println("\nServer failed to login member:\n" + ex);
-            return null;
+            ex.printStackTrace();
+            return Response.status(Response.Status.UNAUTHORIZED).build();
         }
     }
 
@@ -140,44 +173,44 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
         return passwordHash;
     }
 
-    @GET
-    @Path("account")
-    @Produces("application/json")
-    public MemberHelper getMemberAccount(@QueryParam("email") String email) {
-        System.out.println("getMemberAccount is called");
-        try {
-            Query q = em.createQuery("SELECT m FROM Memberentity m where m.email=:email and m.isdeleted=FALSE");
-            q.setParameter("email", email);
-            Memberentity m = (Memberentity) q.getSingleResult();
-            Loyaltytierentity loyalty = m.getLoyaltytierId();
-            List<Itementity> wishList = m.getWishlistId().getItementityList();
-            ArrayList<String> arrWishList = new ArrayList<>();
-
-            for (Itementity i : wishList) {
-                arrWishList.add(i.getSku() + ": " + i.getName() + " x 1");
-            }
-            MemberHelper helper = new MemberHelper();
-            helper.setEmail(email);
-            helper.setName(m.getName());
-            helper.setTier(loyalty.getTier());
-            helper.setPointsEarned(m.getLoyaltypoints());
-            double test = m.getCummulativespending();
-            if (test != 0) {
-                DecimalFormat df = new DecimalFormat("#.00");
-                String hello = df.format(test);
-                helper.setAmountSpent(hello);
-            } else {
-                helper.setAmountSpent("0.00");
-            }
-            helper.setWishList(arrWishList);
-            System.out.println("Login credentials provided were incorrect, password wrong.");
-            return helper;
-
-        } catch (Exception ex) {
-            System.out.println("\nServer failed to login member:\n" + ex);
-            return null;
-        }
-    }
+//    @GET
+//    @Path("account")
+//    @Produces("application/json")
+//    public Member getMemberAccount(@QueryParam("email") String email) {
+//        System.out.println("getMemberAccount is called");
+//        try {
+//            Query q = em.createQuery("SELECT m FROM Memberentity m where m.email=:email and m.isdeleted=FALSE");
+//            q.setParameter("email", email);
+//            Memberentity m = (Memberentity) q.getSingleResult();
+//            Loyaltytierentity loyalty = m.getLoyaltytierId();
+//            List<Itementity> wishList = m.getWishlistId().getItementityList();
+//            ArrayList<String> arrWishList = new ArrayList<>();
+//
+//            for (Itementity i : wishList) {
+//                arrWishList.add(i.getSku() + ": " + i.getName() + " x 1");
+//            }
+//            Member helper = new Member();
+//            helper.setEmail(email);
+//            helper.setName(m.getName());
+//            helper.setTier(loyalty.getTier());
+//            helper.setLoyaltyPoints(m.getLoyaltypoints());
+//            double test = m.getCummulativespending();
+//            if (test != 0) {
+//                DecimalFormat df = new DecimalFormat("#.00");
+//                String hello = df.format(test);
+//                helper.setCumulativeSpending(hello);
+//            } else {
+//                helper.setCumulativeSpending("0.00");
+//            }
+//            helper.setWishList(arrWishList);
+//            System.out.println("Login credentials provided were incorrect, password wrong.");
+//            return helper;
+//
+//        } catch (Exception ex) {
+//            System.out.println("\nServer failed to login member:\n" + ex);
+//            return null;
+//        }
+//    }
 
     @GET
     @Path("uploadShoppingList")
