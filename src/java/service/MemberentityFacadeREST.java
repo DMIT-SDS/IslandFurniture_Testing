@@ -116,7 +116,6 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
 //            return null;
 //        }
 //    }
-
     @GET
     @Path("login")
     @Produces("application/json")
@@ -130,24 +129,43 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
             rs.next();
             String passwordSalt = rs.getString("PASSWORDSALT");
             String passwordHash = generatePasswordHash(passwordSalt, password);
-            Member member = new Member();
             if (passwordHash.equals(rs.getString("PASSWORDHASH"))) {
-                member.setAddress(rs.getString("ADDRESS"));
-                member.setAge(rs.getInt("AGE"));
-                member.setCity(rs.getString("CITY"));
-                member.setCumulativeSpending(rs.getDouble("CUMULATIVESPENDING"));
-                member.setEmail(rs.getString("EMAIL"));
-                member.setId(rs.getLong("ID"));
-                member.setIncome(rs.getInt("INCOME"));
-                member.setLoyaltyPoints(rs.getInt("LOYALTYPOINTS"));
-                member.setName(rs.getString("NAME"));
-                member.setPhone(rs.getString("PHONE"));
-                member.setSecurityAnswer(rs.getString("SECURITYANSWER"));
-                member.setSecurityQuestion(rs.getInt("SECURITYQUESTION"));
+                return Response.ok(email, MediaType.APPLICATION_JSON).build();
             } else {
                 System.out.println("Login credentials provided were incorrect, password wrong.");
                 return Response.status(Response.Status.UNAUTHORIZED).build();
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
+    }
+
+    @GET
+    @Path("getMember")
+    @Produces("application/json")
+    public Response getMember(@QueryParam("email") String email) {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
+            String stmt = "SELECT * FROM memberentity m WHERE m.EMAIL=?";
+            PreparedStatement ps = conn.prepareStatement(stmt);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            Member member = new Member();
+            member.setAddress(rs.getString("ADDRESS"));
+            member.setAge(rs.getInt("AGE"));
+            member.setCity(rs.getString("CITY"));
+            member.setCumulativeSpending(rs.getDouble("CUMULATIVESPENDING"));
+            member.setEmail(rs.getString("EMAIL"));
+            member.setId(rs.getLong("ID"));
+            member.setIncome(rs.getInt("INCOME"));
+            member.setLoyaltyPoints(rs.getInt("LOYALTYPOINTS"));
+            member.setName(rs.getString("NAME"));
+            member.setPhone(rs.getString("PHONE"));
+            member.setSecurityAnswer(rs.getString("SECURITYANSWER"));
+            member.setSecurityQuestion(rs.getInt("SECURITYQUESTION"));
+            
             return Response.ok(member, MediaType.APPLICATION_JSON).build();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -211,7 +229,6 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
 //            return null;
 //        }
 //    }
-
     @GET
     @Path("uploadShoppingList")
     @Produces({"application/json"})
