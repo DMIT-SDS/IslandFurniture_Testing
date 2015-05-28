@@ -5,13 +5,18 @@ import Entity.Lineitementity;
 import Entity.Member;
 import Entity.Memberentity;
 import Entity.Qrphonesyncentity;
+import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import javax.ejb.Stateless;
@@ -27,8 +32,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 @Stateless
 @Path("entity.memberentity")
@@ -165,12 +172,78 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
             member.setPhone(rs.getString("PHONE"));
             member.setSecurityAnswer(rs.getString("SECURITYANSWER"));
             member.setSecurityQuestion(rs.getInt("SECURITYQUESTION"));
-            
+            System.out.println("member details retrieved");
             return Response.ok(member, MediaType.APPLICATION_JSON).build();
         } catch (Exception ex) {
             ex.printStackTrace();
             return Response.status(Response.Status.UNAUTHORIZED).build();
         }
+    }
+
+    @POST
+    @Path("editMember")
+    @Consumes({"application/json"})
+    public Response editMember(@QueryParam("email") String email, @QueryParam("name") String name, @QueryParam("phone") String phone, @QueryParam("city") String city, @QueryParam("address") String address, @QueryParam("securityQuestion") Integer securityQuestion, @QueryParam("securityAnswer") String securityAnswer, @QueryParam("age") Integer age, @QueryParam("income") Integer income, @QueryParam("password") String password) {
+        try {
+            System.out.println("editMember called.");
+            String stmt = "";
+            PreparedStatement ps = null;
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/islandfurniture-it07?zeroDateTimeBehavior=convertToNull&user=root&password=12345");
+            if (!password.isEmpty()) {
+                String passwordSalt = generatePasswordSalt();
+                String passwordHash = generatePasswordHash(passwordSalt, password);
+                stmt = "UPDATE memberentity SET `ADDRESS`=?, `AGE`=?, `CITY`=?, `INCOME`=?, `NAME`=?, `PASSWORDHASH`=?, "
+                        + "`PASSWORDSALT`=?, `PHONE`=?, `SECURITYANSWER`=?, `SECURITYQUESTION`=? WHERE `EMAIL`=?";
+                ps = conn.prepareStatement(stmt);
+                ps.setString(1, address);
+                ps.setInt(2, age);
+                ps.setString(3, city);
+                ps.setInt(4, income);
+                ps.setString(5, name);
+                ps.setString(6, passwordHash);
+                ps.setString(7, passwordSalt);
+                ps.setString(8, phone);
+                ps.setString(9, securityAnswer);
+                ps.setInt(10, securityQuestion);
+                ps.setString(11, email);
+            } else {
+                stmt = "UPDATE memberentity SET `ADDRESS`=?, `AGE`=?, `CITY`=?, `INCOME`=?, `NAME`=?, `PHONE`=?, "
+                        + "`SECURITYANSWER`=?, `SECURITYQUESTION`=? WHERE `EMAIL`=?";
+                ps = conn.prepareStatement(stmt);
+                ps.setString(1, address);
+                ps.setInt(2, age);
+                ps.setString(3, city);
+                ps.setInt(4, income);
+                ps.setString(5, name);
+                ps.setString(6, phone);
+                ps.setString(7, securityAnswer);
+                ps.setInt(8, securityQuestion);
+                ps.setString(9, email);
+            }
+            int result = ps.executeUpdate();
+            if (result > 0) {
+                System.out.println("Updated successfully!");
+                return Response.ok().build();
+            } else {
+                System.out.println("Response.status(Response.Status.NOT_FOUND).build();");
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+        } catch (Exception ex) {
+            System.out.println("Exception occurred");
+            ex.printStackTrace();
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
+
+    public String generatePasswordSalt() {
+        byte[] salt = new byte[16];
+        try {
+            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+            sr.nextBytes(salt);
+        } catch (NoSuchAlgorithmException ex) {
+            System.out.println("\nServer failed to generate password salt.\n" + ex);
+        }
+        return Arrays.toString(salt);
     }
 
     public String generatePasswordHash(String salt, String password) {
