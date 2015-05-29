@@ -165,7 +165,6 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
             member.setCity(rs.getString("CITY"));
             member.setCumulativeSpending(rs.getDouble("CUMULATIVESPENDING"));
             member.setEmail(rs.getString("EMAIL"));
-            member.setId(rs.getLong("ID"));
             member.setIncome(rs.getInt("INCOME"));
             member.setLoyaltyPoints(rs.getInt("LOYALTYPOINTS"));
             member.setName(rs.getString("NAME"));
