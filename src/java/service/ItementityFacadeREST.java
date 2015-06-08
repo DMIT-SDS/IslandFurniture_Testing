@@ -145,7 +145,7 @@ public class ItementityFacadeREST extends AbstractFacade<Itementity> {
             .build();
         } catch (Exception ex) {
             ex.printStackTrace();
-            return null;
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
     }
 
