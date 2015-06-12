@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package service;
 
 import Entity.RetailProduct;
@@ -28,10 +23,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 
-/**
- *
- * @author Jason
- */
 @Stateless
 @Path("entity.retailproductentity")
 public class RetailproductentityFacadeREST extends AbstractFacade<Retailproductentity> {
@@ -91,6 +82,8 @@ public class RetailproductentityFacadeREST extends AbstractFacade<Retailproducte
         return String.valueOf(super.count());
     }
 
+    //#viewretailproductstask4b - retrieve a list of retail products
+    //this function is used by ECommerce_AllRetailProductsServlet
     @GET
     @Path("getRetailProductList")
     @Produces("application/json")

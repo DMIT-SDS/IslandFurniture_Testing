@@ -86,43 +86,7 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
         return list;
     }
 
-//    @GET
-//    @Path("login")
-//    @Produces("application/json")
-//    public Memberentity loginMember(@QueryParam("email") String email, @QueryParam("password") String password) {
-//        System.out.println("loginMember is called");
-//        try {
-//            Query q = em.createQuery("SELECT m FROM Memberentity m where m.email=:email and m.isdeleted=FALSE");
-//            q.setParameter("email", email);
-//            Memberentity m = (Memberentity) q.getSingleResult();
-//            System.out.println("member email: " + m.getEmail());
-//            String passwordSalt = m.getPasswordsalt();
-//            String passwordHash = generatePasswordHash(passwordSalt, password);
-//            if (passwordHash.equals(m.getPasswordhash())) {
-//                em.detach(m);
-//                m.setLoyaltytierId(null);
-//                m.setCity(null);
-//                m.setAccountactivationstatus(null);
-//                m.setAccountlockstatus(null);
-//                m.setAddress(null);
-//                m.setPasswordhash(null);
-//                m.setLineitementityList(null);
-//                m.setWishlistId(null);
-//                m.setPasswordhash(null);
-//                m.setPasswordsalt(null);
-//                m.setPasswordreset(null);
-//                m.setUnlockcode(null);
-//                m.setActivationcode(null);
-//                return m;
-//            } else {
-//                System.out.println("Login credentials provided were incorrect, password wrong.");
-//                return null;
-//            }
-//        } catch (Exception ex) {
-//            System.out.println("\nServer failed to login member:\n" + ex);
-//            return null;
-//        }
-//    }
+    //this function is used by ECommerce_MemberLoginServlet
     @GET
     @Path("login")
     @Produces("application/json")
@@ -148,6 +112,8 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
         }
     }
 
+    //#getmember - retrieve the member details
+    //this function is used by ECommerce_GetMember servlet
     @GET
     @Path("getMember")
     @Produces("application/json")
@@ -179,6 +145,8 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
         }
     }
 
+    //#editmember - edit the member details
+    //this function is used by ECommerce_MemberEditProfileServlet
     @POST
     @Path("editMember")
     @Consumes({"application/json"})
@@ -263,44 +231,6 @@ public class MemberentityFacadeREST extends AbstractFacade<Memberentity> {
         return passwordHash;
     }
 
-//    @GET
-//    @Path("account")
-//    @Produces("application/json")
-//    public Member getMemberAccount(@QueryParam("email") String email) {
-//        System.out.println("getMemberAccount is called");
-//        try {
-//            Query q = em.createQuery("SELECT m FROM Memberentity m where m.email=:email and m.isdeleted=FALSE");
-//            q.setParameter("email", email);
-//            Memberentity m = (Memberentity) q.getSingleResult();
-//            Loyaltytierentity loyalty = m.getLoyaltytierId();
-//            List<Itementity> wishList = m.getWishlistId().getItementityList();
-//            ArrayList<String> arrWishList = new ArrayList<>();
-//
-//            for (Itementity i : wishList) {
-//                arrWishList.add(i.getSku() + ": " + i.getName() + " x 1");
-//            }
-//            Member helper = new Member();
-//            helper.setEmail(email);
-//            helper.setName(m.getName());
-//            helper.setTier(loyalty.getTier());
-//            helper.setLoyaltyPoints(m.getLoyaltypoints());
-//            double test = m.getCummulativespending();
-//            if (test != 0) {
-//                DecimalFormat df = new DecimalFormat("#.00");
-//                String hello = df.format(test);
-//                helper.setCumulativeSpending(hello);
-//            } else {
-//                helper.setCumulativeSpending("0.00");
-//            }
-//            helper.setWishList(arrWishList);
-//            System.out.println("Login credentials provided were incorrect, password wrong.");
-//            return helper;
-//
-//        } catch (Exception ex) {
-//            System.out.println("\nServer failed to login member:\n" + ex);
-//            return null;
-//        }
-//    }
     @GET
     @Path("uploadShoppingList")
     @Produces({"application/json"})

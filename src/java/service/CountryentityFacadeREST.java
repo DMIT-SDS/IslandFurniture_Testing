@@ -86,8 +86,9 @@ public class CountryentityFacadeREST extends AbstractFacade<Countryentity> {
         }
         return countryList;
     }
-//###
-
+    
+    //#shoppingcart - get the item quantity based on countryID and SKU. 
+    //this function is used in the ECommerce_AddFurnitureToListServlet
     @GET
     @Path("getQuantity")
     @Produces({"application/json"})

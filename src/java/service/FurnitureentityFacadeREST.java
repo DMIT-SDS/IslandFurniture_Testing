@@ -81,7 +81,9 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
     public String countREST() {
         return String.valueOf(super.count());
     }
-
+    
+    //Display a list of all the furniture
+    //this function is not used in the student's copy, can be found in the ECommerce_AllFurnituresServlet of Lecturer's copy
     @GET
     @Path("getFurnitureList")
     @Produces("application/json")
@@ -137,6 +139,8 @@ public class FurnitureentityFacadeREST extends AbstractFacade<Furnitureentity> {
         }
     }
 
+    //#viewfurniturebycategorytask4a - retrieve a list of furniture by category
+    //this function is used in the FurnitureCategoryServlet
     @GET
     @Path("getFurnitureListByCategory")
     @Produces("application/json")

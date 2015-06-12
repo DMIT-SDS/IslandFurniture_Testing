@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package service;
 
 import Entity.Furniture;
@@ -25,10 +20,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-/**
- *
- * @author Jason
- */
 @Stateless
 @Path("entity.itementity")
 public class ItementityFacadeREST extends AbstractFacade<Itementity> {
@@ -67,26 +58,6 @@ public class ItementityFacadeREST extends AbstractFacade<Itementity> {
         return super.find(id);
     }
 
-//    @GET
-//    @Override
-//    @Produces({"application/xml", "application/json"})
-//    public List<Itementity> findAll() {
-//        return super.findAll();
-//    }
-//
-//    @GET
-//    @Path("{from}/{to}")
-//    @Produces({"application/xml", "application/json"})
-//    public List<Itementity> findRange(@PathParam("from") Integer from, @PathParam("to") Integer to) {
-//        return super.findRange(new int[]{from, to});
-//    }
-//
-//    @GET
-//    @Path("count")
-//    @Produces("text/plain")
-//    public String countREST() {
-//        return String.valueOf(super.count());
-//    }
     @GET
     @Path("items")
     @Produces({"application/json"})
@@ -125,7 +96,9 @@ public class ItementityFacadeREST extends AbstractFacade<Itementity> {
             return "";
         }
     }
-    
+
+    //Retrieve an item based on SKU
+    //this function is not used
     @GET
     @Path("item")
     @Produces({"application/json"})
@@ -135,14 +108,14 @@ public class ItementityFacadeREST extends AbstractFacade<Itementity> {
             q.setParameter("SKU", SKU);
             Itementity item = (Itementity) q.getSingleResult();
             return Response
-            .status(200)
-            .header("Access-Control-Allow-Origin", "*")
-            .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
-            .header("Access-Control-Allow-Credentials", "true")
-            .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
-            .header("Access-Control-Max-Age", "1209600")
-            .entity(item)
-            .build();
+                    .status(200)
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Headers", "origin, content-type, accept, authorization")
+                    .header("Access-Control-Allow-Credentials", "true")
+                    .header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD")
+                    .header("Access-Control-Max-Age", "1209600")
+                    .entity(item)
+                    .build();
         } catch (Exception ex) {
             ex.printStackTrace();
             return Response.status(Response.Status.NOT_FOUND).build();
@@ -154,7 +127,7 @@ public class ItementityFacadeREST extends AbstractFacade<Itementity> {
     @Produces({"application/json"})
     public List<Furniture> listAllFurnitureByCountry(@QueryParam("country") String country) {
         Query q = em.createQuery("Select c from ItemCountryentity c,Countryentity co where c.countryId.id=co.id and co.name=:country and c.isdeleted=false");
-        
+
         q.setParameter("country", country);
         List<ItemCountryentity> list = q.getResultList();
         List<Furniture> furnitureList = new ArrayList();
@@ -179,26 +152,6 @@ public class ItementityFacadeREST extends AbstractFacade<Itementity> {
         return furnitureList;
     }
 
-//    @GET
-//    @Path("itemInfo")
-//    @Produces({"application/json"})
-//    public furniture getItemInfo(@QueryParam("country") Long itemId) {
-//        Query q = em.createQuery("Select i from Itementity i where i.id=:itemId and i.isdeleted=false");
-//        List<Itementity> item = q.getSingleResult();
-//        List<furniture> furnitureList = new ArrayList();
-//        
-//        furniture furniture = new furniture();
-//        furniture.setId(item.getId());
-//        furniture.setName(item.getName());
-//        furniture.setDescription(item.getDescription());
-//        furniture.setImageUrl(item.getFurnitureentity().getImageurl());
-//        furniture.setSKU(item.getSku());
-//        furniture.setType(item.getType());
-//        furnitureList.add(furniture);
-//        
-//        return furnitureList;
-//    }
-//    
     @Override
     protected EntityManager getEntityManager() {
         return em;

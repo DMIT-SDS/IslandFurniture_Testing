@@ -1,5 +1,4 @@
 package service;
-//###
 
 import java.net.URI;
 import java.sql.Connection;
@@ -18,6 +17,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 @Path("commerce")
 public class ECommerceFacadeREST {
 
@@ -45,6 +45,8 @@ public class ECommerceFacadeREST {
     public void putJson(String content) {
     }
 
+    //#shoppingcart - create the transaction record during shopping cart checkout
+    // this function is used by ECommerce_PaymentServlet
     @PUT
     @Path("createECommerceTransactionRecord")
     @Consumes({"application/json"})
@@ -108,6 +110,8 @@ public class ECommerceFacadeREST {
         }
     }
 
+    //#shoppingcart - create the line items record for the transaction record during shopping cart checkout
+    // this function is used by ECommerce_PaymentServlet
     @PUT
     @Path("createECommerceLineItemRecord")
     @Consumes({"application/json"})
