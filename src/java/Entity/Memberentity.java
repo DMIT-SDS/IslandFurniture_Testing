@@ -42,7 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Memberentity.findByAccountactivationstatus", query = "SELECT m FROM Memberentity m WHERE m.accountactivationstatus = :accountactivationstatus"),
     @NamedQuery(name = "Memberentity.findByAccountlockstatus", query = "SELECT m FROM Memberentity m WHERE m.accountlockstatus = :accountlockstatus"),
     @NamedQuery(name = "Memberentity.findByActivationcode", query = "SELECT m FROM Memberentity m WHERE m.activationcode = :activationcode"),
-    @NamedQuery(name = "Memberentity.findByCummulativespending", query = "SELECT m FROM Memberentity m WHERE m.cummulativespending = :cummulativespending"),
+    @NamedQuery(name = "Memberentity.findByCumulativespending", query = "SELECT m FROM Memberentity m WHERE m.cumulativespending = :cumulativespending"),
     @NamedQuery(name = "Memberentity.findByIsdeleted", query = "SELECT m FROM Memberentity m WHERE m.isdeleted = :isdeleted"),
     @NamedQuery(name = "Memberentity.findByLoyaltycardid", query = "SELECT m FROM Memberentity m WHERE m.loyaltycardid = :loyaltycardid"),
     @NamedQuery(name = "Memberentity.findByLoyaltypoints", query = "SELECT m FROM Memberentity m WHERE m.loyaltypoints = :loyaltypoints"),
@@ -96,7 +96,7 @@ public class Memberentity implements Serializable {
     private String city;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "CUMMULATIVESPENDING")
-    private Double cummulativespending;
+    private Double cumulativespending;
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Lob
     @Size(max = 2147483647)
@@ -214,12 +214,12 @@ public class Memberentity implements Serializable {
         this.city = city;
     }
 
-    public Double getCummulativespending() {
-        return cummulativespending;
+    public Double getCumulativespending() {
+        return cumulativespending;
     }
 
-    public void setCummulativespending(Double cummulativespending) {
-        this.cummulativespending = cummulativespending;
+    public void setCumulativespending(Double cumulativespending) {
+        this.cumulativespending = cumulativespending;
     }
 
     public String getEmail() {
